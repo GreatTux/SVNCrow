@@ -1,9 +1,9 @@
-#include "widget.h"
+#include "toast.h"
 #include <QPropertyAnimation>
 #include <QMouseEvent>
 #include "qmath.h"
 
-Widget::Widget(QFont font, QColor fontColor, QColor color, int iOpacity, QWidget *parent) :
+Toast::Toast(QFont font, QColor fontColor, QColor color, int iOpacity, QWidget *parent) :
 	QWidget(parent, Qt::ToolTip|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint)
 {
 	this->setAttribute(Qt::WA_TranslucentBackground);
@@ -19,7 +19,7 @@ Widget::Widget(QFont font, QColor fontColor, QColor color, int iOpacity, QWidget
 	updateStyleSheet();
 }
 
-QColor Widget::negative(QColor color)
+QColor Toast::negative(QColor& color)
 {
 	color.setRed(qAbs(255-color.red()));
 	color.setGreen(qAbs(255-color.green()));
@@ -27,10 +27,11 @@ QColor Widget::negative(QColor color)
 	return color;
 }
 
-void Widget::changeEvent(QEvent *e)
+void Toast::changeEvent(QEvent *e)
 {
 	QWidget::changeEvent(e);
-	switch (e->type()) {
+	switch (e->type())
+	{
 	case QEvent::LanguageChange:
 		ui.retranslateUi(this);
 		break;
@@ -39,7 +40,7 @@ void Widget::changeEvent(QEvent *e)
 	}
 }
 
-void Widget::mousePressEvent(QMouseEvent *event)
+void Toast::mousePressEvent(QMouseEvent *event)
 {
 	if(event->button() == Qt::RightButton ||
 		event->button() == Qt::MiddleButton )
@@ -48,7 +49,7 @@ void Widget::mousePressEvent(QMouseEvent *event)
 	}
 }
 
-void Widget::updateStyleSheet()
+void Toast::updateStyleSheet()
 {
 	ui.widget->setStyleSheet(
 		QString(	".QWidget{border-radius: 4px;" \
@@ -58,7 +59,7 @@ void Widget::updateStyleSheet()
 	);
 }
 
-void Widget::setData(logmsg_t s)
+void Toast::setData(const logmsg_t& s)
 {
 	ui.m_authorLabel->setText(s.author);
 	ui.m_dateLabel->setText(s.date.toString());
@@ -66,7 +67,7 @@ void Widget::setData(logmsg_t s)
 	ui.m_logLabel->setText(s.msg);
 }
 
-void Widget::showFadeIn()
+void Toast::showFadeIn()
 {
 	this->setWindowOpacity(0.0);
 
@@ -81,7 +82,7 @@ void Widget::showFadeIn()
 	anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void Widget::hideFadeOut()
+void Toast::hideFadeOut()
 {
 	QPropertyAnimation* anim = new QPropertyAnimation(this, "windowOpacity", this);
 	anim->setDuration(350);

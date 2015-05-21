@@ -1,6 +1,6 @@
 #include "application.h"
 #include "output.h"
-#include "widget.h"
+#include "toast.h"
 #include "settings.h"
 #include "qmath.h"
 
@@ -54,6 +54,8 @@ void Application::timerEvent(QTimerEvent *event)
 
 void Application::applySettings(Settings* settingsDiag)
 {
+	Q_ASSERT(settingsDiag);
+
 	m_url = settingsDiag->getURL();
 	m_user = settingsDiag->getUser();
 	m_pwd = settingsDiag->getPWD();
@@ -77,36 +79,39 @@ void Application::forceReDisplay()
 
 void Application::aboutToQuit()
 {
+	if(m_trayMenu)
+		delete m_trayMenu;
 }
 
-void Application::setSysIcon(QSystemTrayIcon *i)
+void Application::setSysIcon(QSystemTrayIcon *icon)
 {
-	Q_ASSERT(i);
+	Q_ASSERT(icon);
+	Q_ASSERT(!m_trayMenu);
 
 	if(m_trayIcon)
 		m_trayIcon->deleteLater();
 
-	m_trayIcon = i;
-	QMenu* menu = new QMenu();
-	menu->addAction(tr("Settings..."), this, SLOT(showSettings()));
-	menu->addSeparator();
-	menu->addAction(tr("Exit SVN Crow"), this, SLOT(quit()));
-	m_trayIcon->setContextMenu(menu);
+	m_trayIcon = icon;
+	m_trayMenu = new QMenu();
+	m_trayMenu->addAction(tr("Settings..."), this, SLOT(showSettings()));
+	m_trayMenu->addSeparator();
+	m_trayMenu->addAction(tr("Exit SVN Crow"), this, SLOT(quit()));
+	m_trayIcon->setContextMenu(m_trayMenu);
 
-	connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(handleSysTrayIconClick(QSystemTrayIcon::ActivationReason)));
+	QObject::connect(m_trayIcon, &QSystemTrayIcon::activated, this, &Application::handleSysTrayIconClick);
 }
 
 void Application::doPollRepository(bool bForceShow)
 {
 	QStringList arguments;
-	arguments << "log"
-				 << "-l1"
-				 << "--xml"
-				 << "--non-interactive"
-				 << QString("--username=%1").arg(m_user)
-				 << QString("--password=%1").arg(m_pwd)
-				 << m_url
-				 ;
+	arguments	<< "log"
+				<< "-l1"
+				<< "--xml"
+				<< "--non-interactive"
+				<< QString("--username=%1").arg(m_user)
+				<< QString("--password=%1").arg(m_pwd)
+				<< m_url
+				;
 
 	QProcess myProcess;
 	myProcess.start("svn", arguments);
@@ -119,7 +124,6 @@ void Application::doPollRepository(bool bForceShow)
 		cDebug << "Error waiting for process";
 
 	QByteArray result = myProcess.readAllStandardOutput();
-	//cDebug << "Output:" << QString(result);
 
 	logmsg_t s = parseLog(QString::fromUtf8(result));
 	if(s.valid)
@@ -137,7 +141,7 @@ void Application::showWidget(const logmsg_t &s)
 	const int margin = 10;
 
 	int iOpacity = qRound((m_iOpacity/100.0)*255);
-	Widget* widget = new Widget(m_font, m_fontColor, m_color, iOpacity);
+	Toast* widget = new Toast(m_font, m_fontColor, m_color, iOpacity);
 	widget->setData(s);
 	widget->move(desktop.availableGeometry().width()- widget->width() - margin,
 					 desktop.availableGeometry().height() - widget->height() - margin);

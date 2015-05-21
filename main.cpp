@@ -7,7 +7,6 @@ int main(int argc, char *argv[])
 	Application a(argc, argv);
 	a.setQuitOnLastWindowClosed(false);
 
-	qDebug() << "\n";
 	qDebug() << "Launching SVN Crow";
 
 	QSystemTrayIcon sysTray;

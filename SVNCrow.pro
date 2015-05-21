@@ -9,22 +9,25 @@ QT       += core xml widgets
 TARGET = SVNCrow
 TEMPLATE = app
 
+CONFIG += c++11
 
 SOURCES += main.cpp\
-        widget.cpp \
     settings.cpp \
     application.cpp \
-    crowmon.cpp
+    crowmon.cpp \
+    toast.cpp
 
-HEADERS  += widget.h \
+HEADERS  += \
     output.h \
     settings.h \
     application.h \
-    crowmon.h
+    crowmon.h \
+    toast.h
 
-FORMS    += widget.ui \
+FORMS    += \
     settings.ui \
-    settingsnew.ui
+    settingsnew.ui \
+    toast.ui
 
 RESOURCES += \
     svncrow.qrc

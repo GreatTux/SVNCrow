@@ -17,7 +17,7 @@ struct logmsg_t
 	QString		author;
 	QDateTime	date;
 	QString		msg;
-	bool			valid;
+	bool		valid;
 };
 
 namespace CrowMon

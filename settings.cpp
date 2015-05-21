@@ -10,15 +10,15 @@ Settings::Settings(QWidget *parent) :
 	ui.setupUi(this);
 }
 
-void Settings::initialize(	QString	url,
-									QString	user,
-									QString	pwd,
-									int		iCheckPeriod,
-									QFont		font,
-									QColor	fontColor,
-									QColor	color,
-									int		iOpacity,
-									int		iDisplayTimeout)
+void Settings::initialize(	const QString&	url,
+							const QString&	user,
+							const QString&	pwd,
+							int				iCheckPeriod,
+							const QFont&	font,
+							const QColor&	fontColor,
+							const QColor&	color,
+							int				iOpacity,
+							int				iDisplayTimeout)
 {
 	//Set values
 	ui.m_urlLineEdit->setText(url);
@@ -59,14 +59,14 @@ void Settings::save()
 	settings.setValue("DisplayTimeOut", ui.m_displayTimeoutSlider->value());
 }
 
-void Settings::updateFontColorLabel(QColor color)
+void Settings::updateFontColorLabel(const QColor& color)
 {
 	QPixmap pix(ui.m_fontColorLabel->width(), ui.m_fontColorLabel->height());
 	pix.fill(color);
 	ui.m_fontColorLabel->setPixmap(pix);
 }
 
-void Settings::updateColorLabel(QColor color)
+void Settings::updateColorLabel(const QColor& color)
 {
 	QPixmap pix(ui.m_colorLabel->width(), ui.m_colorLabel->height());
 	pix.fill(color);
@@ -76,7 +76,8 @@ void Settings::updateColorLabel(QColor color)
 void Settings::changeEvent(QEvent *e)
 {
 	QDialog::changeEvent(e);
-	switch (e->type()) {
+	switch (e->type())
+	{
 	case QEvent::LanguageChange:
 		ui.retranslateUi(this);
 		break;
@@ -87,8 +88,6 @@ void Settings::changeEvent(QEvent *e)
 
 void Settings::done(int r)
 {
-	cDebug << r;
-
 	if(r == QDialog::Accepted)
 		save();
 
@@ -117,6 +116,8 @@ void Settings::on_m_colorButton_clicked()
 
 void Settings::on_m_buttonBox_clicked(QAbstractButton *button)
 {
+	Q_ASSERT(button);
+
 	if(ui.m_buttonBox->buttonRole(button) == QDialogButtonBox::ApplyRole)
 	{
 		save();
