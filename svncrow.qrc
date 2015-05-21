@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="trayicon">blue_speech_bubble_48.png</file>
+    </qresource>
+</RCC>
